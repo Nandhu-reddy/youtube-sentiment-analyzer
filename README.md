@@ -27,6 +27,7 @@ So I thought:
 ```bash
 git clone https://github.com/YOUR_USERNAME/youtube-sentiment-analyzer.git
 cd youtube-sentiment-analyzer
+
 2️⃣ Install dependencies:
 
 bash

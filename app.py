@@ -18,11 +18,20 @@ def get_sentiment(text):
         return 'Neutral'
 
 # Function to fetch comments
-def fetch_comments(video_id):
+def get_comments_and_title(video_id):
     youtube = build('youtube', 'v3', developerKey=api_key)
+
+    # Get video title
+    video_request = youtube.videos().list(
+        part="snippet",
+        id=video_id
+    )
+    video_response = video_request.execute()
+    video_title = video_response["items"][0]["snippet"]["title"]
+
+    # Fetch comments
     comments = []
     nextPageToken = None
-
     while True:
         request = youtube.commentThreads().list(
             part="snippet",
@@ -39,7 +48,9 @@ def fetch_comments(video_id):
         nextPageToken = response.get('nextPageToken')
         if not nextPageToken:
             break
-    return comments
+
+    return comments, video_title
+
 
 # Streamlit UI
 
@@ -61,7 +72,9 @@ if video_url:
             st.stop()
 
         st.write("Fetching comments...")
-        comments = fetch_comments(video_id)
+        comments, video_title = get_comments_and_title(video_id)
+        st.subheader(f"🎥 Video Title: {video_title}")
+
         st.write(f"Total comments fetched: {len(comments)}")
 
         sentiments = [get_sentiment(comment) for comment in comments]
